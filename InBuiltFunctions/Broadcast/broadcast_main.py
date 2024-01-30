@@ -14,10 +14,10 @@ flight_schema = StructType([StructField("airline", StringType(), True), StructFi
                             StructField("duration", IntegerType(), True), StructField("days_left", IntegerType(), True),
                             StructField("price", IntegerType(), True)])
 #
-df = spark.read.format("csv").option("header", "true").schema(flight_schema).load("../../SampleData/flight_data.csv")
-df.write.format("parquet").partitionBy("airline").mode("overwrite").save("../../SampleData/flight.parquet")
+df = spark.read.format("csv").option("header", "true").schema(flight_schema).load("/home/manish/PycharmProjects/Spark-Functions/SampleData/flight_data.csv")
+df.write.format("parquet").partitionBy("airline").mode("overwrite").save("/home/manish/PycharmProjects/Spark-Functions/SampleData/flight.parquet")
 
-df1 = spark.read.format("parquet").parquet("../../SampleData/flight.parquet")
+df1 = spark.read.format("parquet").parquet("/home/manish/PycharmProjects/Spark-Functions/SampleData/flight.parquet")
 # df.show()
 # df.printSchema()
 #
@@ -40,5 +40,6 @@ df2 = df2.withColumn("details_json", fun.from_json(fun.col("details"), json_sche
 df2.show()
 
 df3 = df1.join(fun.broadcast(df2), on="airline", how="inner")
+df3 = df3.orderBy("price")
 df3.show()
 df3.printSchema()
